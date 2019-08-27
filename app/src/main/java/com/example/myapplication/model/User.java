@@ -5,6 +5,11 @@ public class User {
     private String mail;
     private String nombre;
 
+    public User(String mail, String nombre) {
+        this.mail = mail;
+        this.nombre = nombre;
+    }
+
     public String getMail() {
         return mail;
     }

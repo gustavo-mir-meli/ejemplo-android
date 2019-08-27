@@ -2,27 +2,24 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.myapplication.adapter.UserAdapter;
 import com.example.myapplication.model.User;
-import com.example.myapplication.service.UserAdapter;
-import com.example.myapplication.service.UserService;
+import com.example.myapplication.service.UserApiAdapter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,13 +43,28 @@ public class MainActivity extends AppCompatActivity {
 
     public void enviar(View view){
 
-        Call<ArrayList<User>> call = UserAdapter.getUserService().getUsers();
+        String mail = etMail.getText().toString();
+        String nombre = etNombre.getText().toString();
+
+        if(!TextUtils.isEmpty(mail) && !TextUtils.isEmpty(nombre)) {
+            UserApiAdapter.getUserService().postUser(mail, nombre).enqueue(new Callback<User>() {
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    if(response.isSuccessful()) {
+                        //showResponse(response.body().toString());
+                        Log.i("", "post submitted to API." + response.body().toString());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    Log.e("", t.getMessage());
+                }
+            });
+        }
+
+        Call<ArrayList<User>> call = UserApiAdapter.getUserService().getUsers();
         call.enqueue(new UserCallback());
-    }
-
-    private void poblarUsers() {
-
-
     }
 
     class UserCallback implements Callback<ArrayList<User>> {
@@ -62,7 +74,12 @@ public class MainActivity extends AppCompatActivity {
 
             if(response.isSuccessful()) {
                 ArrayList<User> users = response.body();
-                int a = 0;
+
+                // Create the adapter to convert the array to views
+                UserAdapter adapter = new UserAdapter(context, users);
+                // Attach the adapter to a ListView
+                ListView listView = (ListView) findViewById(R.id.listView);
+                listView.setAdapter(adapter);
             }
         }
 
