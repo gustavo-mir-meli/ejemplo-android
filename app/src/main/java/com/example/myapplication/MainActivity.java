@@ -58,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
-                    Log.e("", t.getMessage());
+                    Toast.makeText(context, "Hubo un error", Toast.LENGTH_LONG).show();
+                    Log.e("Error al guardar", t.getMessage());
                 }
             });
         }
@@ -80,12 +81,14 @@ public class MainActivity extends AppCompatActivity {
                 // Attach the adapter to a ListView
                 ListView listView = (ListView) findViewById(R.id.listView);
                 listView.setAdapter(adapter);
+            } else {
+                Toast.makeText(context, "Hubo un error", Toast.LENGTH_LONG).show();
             }
         }
 
         @Override
         public void onFailure(Call<ArrayList<User>> call, Throwable t) {
-            Toast.makeText(context, t.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Hubo un error", Toast.LENGTH_LONG).show();
         }
     }
 }
